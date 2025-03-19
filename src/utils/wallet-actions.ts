@@ -78,6 +78,28 @@ export async function sendAndGetResult(
     let cached;
     let cacheKey = '';
 
+    // Generate a consistent key for caching
+    const throttleKey = `throttle_${generateCacheKey(target, tags)}${
+        userKey ? '-' + userKey : ''
+    }`;
+
+    // Check localStorage for recent identical calls
+    const throttleData = localStorage.getItem(throttleKey);
+    if (throttleData) {
+        try {
+            const parsed = JSON.parse(throttleData);
+            // If less than 10 seconds old, return stored result
+            if (Date.now() - parsed.timestamp < 10000 && parsed.response) {
+                console.log('Throttled request - using recent result');
+                return parsed.response;
+            }
+        } catch (e) {
+            // Invalid data, continue with request
+            console.warn('Invalid throttle data:', e);
+        }
+    }
+
+    // Continue with normal caching mechanism
     if (cacheExpiry) {
         cacheKey =
             generateCacheKey(target, tags) + (userKey ? '-' + userKey : '');
@@ -85,6 +107,14 @@ export async function sendAndGetResult(
     }
 
     if (cached) {
+        // Store in throttle cache too
+        localStorage.setItem(
+            throttleKey,
+            JSON.stringify({
+                timestamp: Date.now(),
+                response: cached,
+            })
+        );
         return cached;
     }
 
@@ -108,6 +138,15 @@ export async function sendAndGetResult(
     if (cacheExpiry) {
         setCache(cacheKey, response, cacheExpiry);
     }
+
+    // Store result with timestamp in localStorage for throttling
+    localStorage.setItem(
+        throttleKey,
+        JSON.stringify({
+            timestamp: Date.now(),
+            response: response,
+        })
+    );
 
     return response;
 }
