@@ -1,146 +1,98 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FlaskConical, Github, ExternalLink } from 'lucide-react';
-import { scrollToSection } from '@/utils/helpers';
+import { Twitter, Heart, ExternalLink } from 'lucide-react';
+import { useAnimationPreferences } from '@/utils/helpers';
 
 export const Footer: React.FC = () => {
+    const { isAnimationEnabled } = useAnimationPreferences();
+
+    // Animation settings
+    const fadeIn = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 },
+        },
+    };
+
+    // Partners data with Twitter handles and URLs
+    const partners = [
+        {
+            handle: '@AlwaysBigger',
+            url: 'https://x.com/AlwaysBigger',
+        },
+        {
+            handle: '@Mithril_Labs',
+            url: 'https://x.com/Mithril_Labs',
+        },
+        {
+            handle: '@RandAOToken',
+            url: 'https://x.com/RandAOToken',
+        },
+    ];
+
     return (
-        <footer className="w-full bg-muted border-t border-border mt-16 py-8">
+        <footer className="w-full py-8 border-t border-border bg-muted/20">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Brand column */}
-                    <div className="flex flex-col space-y-3">
-                        <motion.div
-                            className="flex items-center cursor-pointer"
-                            onClick={() => scrollToSection('hero')}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.97 }}
-                        >
-                            <FlaskConical
-                                size={20}
-                                className="text-primary mr-2"
-                                strokeWidth={1.5}
-                            />
-                            <span className="font-bold text-primary font-headings">
-                                Test Tube Token
-                            </span>
-                        </motion.div>
-                        <p className="text-sm text-muted-foreground max-w-xs">
-                            Catalyzing blockchain innovation, one token at a
-                            time
+                <motion.div
+                    className="flex flex-col items-center"
+                    initial={isAnimationEnabled ? 'hidden' : 'visible'}
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeIn}
+                >
+                    {/* Laboratory line decoration */}
+                    <div className="w-16 h-1 bg-laboratory-blue rounded-full mb-6"></div>
+
+                    {/* Powered by section */}
+                    <div className="flex flex-col items-center mb-6">
+                        <p className="text-sm text-foreground/60 mb-3 font-headings">
+                            Powered by
                         </p>
+
+                        <div className="flex flex-wrap justify-center gap-4 max-w-lg">
+                            {partners.map((partner, index) => (
+                                <a
+                                    key={index}
+                                    href={partner.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border rounded-lg hover:border-primary transition-colors duration-200 group"
+                                >
+                                    <Twitter
+                                        size={14}
+                                        className="text-laboratory-blue"
+                                    />
+                                    <span className="text-sm font-mono group-hover:text-primary transition-colors duration-200">
+                                        {partner.handle}
+                                    </span>
+                                    <ExternalLink
+                                        size={12}
+                                        className="text-foreground/40 group-hover:text-primary transition-colors duration-200"
+                                    />
+                                </a>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Quick links column */}
-                    <div className="flex flex-col space-y-3">
-                        <h3 className="font-headings font-medium text-sm uppercase tracking-wider text-muted-foreground">
-                            Laboratory Sections
-                        </h3>
-                        <ul className="space-y-2">
-                            <FooterLink
-                                onClick={() => scrollToSection('how-it-works')}
-                                label="How It Works"
-                            />
-                            <FooterLink
-                                onClick={() => scrollToSection('use-cases')}
-                                label="Use Cases"
-                            />
-                            <FooterLink
-                                onClick={() =>
-                                    scrollToSection('technical-details')
-                                }
-                                label="Technical Details"
-                            />
-                        </ul>
+                    {/* Copyright info */}
+                    <div className="flex items-center text-xs text-foreground/50 mt-4">
+                        <span>
+                            © {new Date().getFullYear()} Test Tube Token
+                        </span>
+                        <span className="mx-2">•</span>
+                        <span className="flex items-center">
+                            Made with{' '}
+                            <Heart
+                                size={12}
+                                className="text-reaction-orange mx-1"
+                            />{' '}
+                            in the laboratory
+                        </span>
                     </div>
-
-                    {/* Resources column */}
-                    <div className="flex flex-col space-y-3">
-                        <h3 className="font-headings font-medium text-sm uppercase tracking-wider text-muted-foreground">
-                            Lab Resources
-                        </h3>
-                        <ul className="space-y-2">
-                            <FooterLink
-                                href="https://arweave.org/"
-                                label="Arweave Blockchain"
-                                external
-                            />
-                            <FooterLink
-                                href="https://arconnect.io/"
-                                label="ArConnect Wallet"
-                                external
-                            />
-                            <FooterLink
-                                href="https://ao.arweave.net/"
-                                label="AO Protocol"
-                                external
-                            />
-                        </ul>
-                    </div>
-                </div>
-
-                {/* Copyright */}
-                <div className="mt-8 pt-4 border-t border-border flex flex-col sm:flex-row justify-between items-center">
-                    <p className="text-xs text-muted-foreground">
-                        © {new Date().getFullYear()} Test Tube Token. All rights
-                        reserved.
-                    </p>
-                    <div className="mt-4 sm:mt-0 flex items-center space-x-4">
-                        <motion.a
-                            href="https://github.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-primary transition-colors"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                        >
-                            <Github size={18} />
-                        </motion.a>
-                    </div>
-                </div>
+                </motion.div>
             </div>
         </footer>
-    );
-};
-
-interface FooterLinkProps {
-    label: string;
-    href?: string;
-    onClick?: () => void;
-    external?: boolean;
-}
-
-const FooterLink: React.FC<FooterLinkProps> = ({
-    label,
-    href,
-    onClick,
-    external = false,
-}) => {
-    const content = (
-        <span className="inline-flex items-center">
-            {label}
-            {external && <ExternalLink size={12} className="ml-1 opacity-70" />}
-        </span>
-    );
-
-    return (
-        <li>
-            <motion.div
-                className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                whileHover={{ x: 2 }}
-            >
-                {href ? (
-                    <a
-                        href={href}
-                        target={external ? '_blank' : undefined}
-                        rel={external ? 'noopener noreferrer' : undefined}
-                    >
-                        {content}
-                    </a>
-                ) : (
-                    <span onClick={onClick}>{content}</span>
-                )}
-            </motion.div>
-        </li>
     );
 };
