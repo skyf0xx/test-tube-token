@@ -135,12 +135,30 @@ export interface TokenBalance {
     account?: string;
 }
 
-// New getBalance function
 export async function getBalance(
     address: string,
     token: string,
     tokenDenomination: number | false = false
 ): Promise<TokenBalance | null> {
+    // Create a cache key for the balance result
+    const balanceCacheKey = `balance_${address}_${token}`;
+
+    // Try to get from localStorage cache first
+    const cachedBalance = localStorage.getItem(balanceCacheKey);
+    if (cachedBalance) {
+        try {
+            const parsedCache = JSON.parse(cachedBalance);
+            // Check if cache is less than 10 seconds old
+            if (Date.now() - parsedCache.timestamp < 10000) {
+                console.log('Using cached balance data');
+                return parsedCache.data;
+            }
+        } catch (e) {
+            // Invalid cache data, proceed with fresh request
+            console.warn('Invalid cache data:', e);
+        }
+    }
+
     const tags = [
         { name: 'Action', value: 'Balance' },
         { name: 'Target', value: address },
@@ -162,11 +180,22 @@ export async function getBalance(
             tokenDenomination || (await getTokenDenomination(token));
         const adjustedBalance = adjustDecimalString(balance, denomination);
 
-        return {
+        const balanceResult = {
             balance: adjustedBalance,
             ticker: ticker,
             account: account,
         };
+
+        // Cache the result with timestamp
+        localStorage.setItem(
+            balanceCacheKey,
+            JSON.stringify({
+                timestamp: Date.now(),
+                data: balanceResult,
+            })
+        );
+
+        return balanceResult;
     } catch (error) {
         return handleError(error, 'getting token balance', null);
     }
