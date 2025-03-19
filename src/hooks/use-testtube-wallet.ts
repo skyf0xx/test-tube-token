@@ -4,19 +4,22 @@ import { devtools } from 'zustand/middleware';
 import { toast } from 'react-toastify';
 import { getBalance, TEST_TOKEN } from '@/utils/wallet-actions';
 
-// Add to the interface
+// Track if initialization has already happened
+let isInitialized = false;
+
 interface TestTubeWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
     balance: number | undefined;
+    isBalanceLoading: boolean;
+    lastBalanceUpdate: number;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
-    refreshBalance: () => Promise<void>; // Add a function to refresh balance
+    refreshBalance: () => Promise<void>;
 }
 
-// Rest of the code remains the same
 export const useTestTubeWalletStore = create<TestTubeWalletState>()(
     devtools(
         (set, get) => ({
@@ -24,25 +27,47 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
             connecting: false,
             connected: false,
             balance: undefined,
+            isBalanceLoading: false,
+            lastBalanceUpdate: 0,
 
             refreshBalance: async () => {
-                const { address, connected } = get();
+                const {
+                    address,
+                    connected,
+                    isBalanceLoading,
+                    lastBalanceUpdate,
+                } = get();
                 if (!connected || !address) return;
 
+                // Prevent multiple simultaneous balance requests
+                if (isBalanceLoading) return;
+
+                // Throttle balance updates - only refresh if it's been at least 3 seconds
+                const now = Date.now();
+                if (now - lastBalanceUpdate < 3000) return;
+
                 try {
+                    set({ isBalanceLoading: true });
+
                     const balanceResponse = await getBalance(
                         address,
                         TEST_TOKEN,
                         12
                     );
+
                     if (balanceResponse) {
-                        set({ balance: parseFloat(balanceResponse.balance) });
+                        set({
+                            balance: parseFloat(balanceResponse.balance),
+                            lastBalanceUpdate: now,
+                        });
                     }
                 } catch (error) {
                     console.error('Error fetching balance:', error);
                     toast.error('Failed to fetch token balance', {
                         autoClose: 5000,
                     });
+                } finally {
+                    set({ isBalanceLoading: false });
                 }
             },
 
@@ -58,15 +83,31 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                     if (permissions.includes('ACCESS_ADDRESS')) {
                         const address =
                             await window.arweaveWallet.getActiveAddress();
-                        set({
-                            address,
-                            connecting: false,
-                            connected: true,
-                        });
 
-                        // Fetch balance after confirming connection
-                        const { refreshBalance } = get();
-                        await refreshBalance();
+                        // Only update state if the address has changed
+                        const { address: currentAddress } = get();
+                        if (currentAddress !== address) {
+                            set({
+                                address,
+                                connecting: false,
+                                connected: true,
+                            });
+
+                            // Fetch balance after confirming connection
+                            const { refreshBalance } = get();
+                            await refreshBalance();
+                        } else if (!currentAddress) {
+                            // If we didn't have an address before but now we do
+                            set({
+                                address,
+                                connecting: false,
+                                connected: true,
+                            });
+
+                            // Fetch balance
+                            const { refreshBalance } = get();
+                            await refreshBalance();
+                        }
                     }
                 } catch (error) {
                     console.error('Error checking connection:', error);
@@ -152,20 +193,33 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
     )
 );
 
-// Hook to initialize wallet event listeners
+// Hook to initialize wallet event listeners (ensures only one initialization)
 export const useTestTubeWalletInit = () => {
     const { checkConnection } = useTestTubeWalletStore();
 
     useEffect(() => {
+        // Prevent multiple initializations
+        if (isInitialized) return;
+        isInitialized = true;
+
+        // Check connection once on mount
         checkConnection();
 
         // Listen for wallet events
-        window.addEventListener('arweaveWalletLoaded', checkConnection);
-        window.addEventListener('walletSwitch', checkConnection);
+        const handleWalletEvent = () => {
+            checkConnection();
+        };
+
+        window.addEventListener('arweaveWalletLoaded', handleWalletEvent);
+        window.addEventListener('walletSwitch', handleWalletEvent);
 
         return () => {
-            window.removeEventListener('arweaveWalletLoaded', checkConnection);
-            window.removeEventListener('walletSwitch', checkConnection);
+            window.removeEventListener(
+                'arweaveWalletLoaded',
+                handleWalletEvent
+            );
+            window.removeEventListener('walletSwitch', handleWalletEvent);
+            isInitialized = false;
         };
     }, []);
 };

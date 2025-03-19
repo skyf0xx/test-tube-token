@@ -229,6 +229,45 @@ export async function getBalance(
         }
     }
 
+    // Track in-flight requests to prevent duplicates
+    const inFlightKey = `in_flight_${balanceCacheKey}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (window[inFlightKey as any]) {
+        console.log('Balance request already in flight, waiting...');
+
+        // Wait for the in-flight request to complete
+        try {
+            await new Promise((resolve) => {
+                const checkCache = () => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    if (!window[inFlightKey as any]) {
+                        resolve(true);
+                        return;
+                    }
+                    setTimeout(checkCache, 100);
+                };
+                checkCache();
+            });
+
+            // Try reading from cache again after waiting
+            const refreshedCache = localStorage.getItem(balanceCacheKey);
+            if (refreshedCache) {
+                try {
+                    const parsedCache = JSON.parse(refreshedCache);
+                    return parsedCache.data;
+                } catch (e) {
+                    console.warn('Invalid cache data after waiting:', e);
+                }
+            }
+        } catch (err) {
+            console.error('Error waiting for in-flight request:', err);
+        }
+    }
+
+    // Mark this request as in-flight
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    window[inFlightKey as any] = true;
+
     const tags = [
         { name: 'Action', value: 'Balance' },
         { name: 'Target', value: address },
@@ -268,6 +307,10 @@ export async function getBalance(
         return balanceResult;
     } catch (error) {
         return handleError(error, 'getting token balance', null);
+    } finally {
+        // Mark request as completed
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        window[inFlightKey as any] = false;
     }
 }
 
