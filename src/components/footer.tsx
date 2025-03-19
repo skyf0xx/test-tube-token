@@ -26,10 +26,10 @@ export const Footer: React.FC = () => {
             handle: '@Mithril_Labs',
             url: 'https://x.com/Mithril_Labs',
         },
-        {
+        /* {
             handle: '@RandAOToken',
             url: 'https://x.com/RandAOToken',
-        },
+        },*/
     ];
 
     return (

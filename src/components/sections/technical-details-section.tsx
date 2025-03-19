@@ -327,25 +327,25 @@ export const TechnicalDetailsSection: React.FC = () => {
                                                             <span className="font-mono block mb-2">
                                                                 Random
                                                             </span>
+                                                            {/* 
                                                             <div className="flex items-center text-xs text-foreground/70">
-                                                                <span>
-                                                                    Powered by{' '}
-                                                                </span>
-                                                                <a
-                                                                    href="https://github.com/RandAOLabs/Random-Module"
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="ml-1 text-primary hover:underline flex items-center"
-                                                                >
-                                                                    RandAOToken
-                                                                    <ExternalLink
-                                                                        size={
-                                                                            10
-                                                                        }
-                                                                        className="ml-1"
-                                                                    />
-                                                                </a>
+                                                            <span>
+                                                                Powered by{' '}
+                                                            </span>
+                                                            
+                                                                href="https://github.com/RandAOLabs/Random-Module"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="ml-1 text-primary hover:underline flex items-center"
+                                                            >
+                                                                RandAOToken
+                                                                <ExternalLink
+                                                                size={10}
+                                                                className="ml-1"
+                                                                />
+                                                            </a>
                                                             </div>
+                                                            */}
                                                         </div>
                                                     </div>
                                                 </div>
