@@ -305,6 +305,16 @@ export const TechnicalDetailsSection: React.FC = () => {
                                                             12
                                                         </span>
                                                     </div>
+                                                    <div className="grid grid-cols-3 gap-2 py-2">
+                                                        <span className="text-sm font-medium text-foreground/70 col-span-1">
+                                                            Supply
+                                                        </span>
+                                                        <span className="text-sm font-mono col-span-2">
+                                                            Infinite: New tokens
+                                                            are minted on each
+                                                            request
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
