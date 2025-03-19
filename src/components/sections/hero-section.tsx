@@ -53,7 +53,7 @@ export const HeroSection: React.FC = () => {
                                               scrollToSection('token-dispenser')
                                         : connect
                                 }
-                                className="bg-laboratory-blue text-foreground text-lg font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-laboratory-blue/90 transition-all"
+                                className="bg-laboratory-blue text-foreground text-lg font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-laboratory-blue/90 transition-all cursor-pointer"
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.98 }}
                             >

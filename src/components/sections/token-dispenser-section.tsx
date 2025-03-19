@@ -259,7 +259,7 @@ export const TokenDispenserSection: React.FC = () => {
 
                                             {/* Bold call-to-action with clear indication */}
                                             <motion.button
-                                                className={`w-full py-4 px-6 rounded-lg font-bold text-lg flex items-center justify-center space-x-2 transition-all 
+                                                className={`w-full py-4 px-6 rounded-lg font-bold text-lg flex items-center justify-center space-x-2 transition-all cursor-pointer 
                                                     ${
                                                         dispensing || success
                                                             ? 'bg-muted cursor-not-allowed'
