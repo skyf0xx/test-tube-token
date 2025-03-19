@@ -218,7 +218,7 @@ export const TokenDispenserSection: React.FC = () => {
                                     <div className="space-y-6">
                                         <div>
                                             <h3 className="text-xl font-bold font-headings mb-4">
-                                                Laboratory Ready
+                                                Wallet Ready
                                             </h3>
 
                                             {/* Wallet connection status */}
@@ -270,7 +270,7 @@ export const TokenDispenserSection: React.FC = () => {
                                                             ? 'bg-test-tube-green'
                                                             : ''
                                                     }
-                                                    text-white shadow-lg`}
+                                                    text-foreground shadow-lg`}
                                                 onClick={handleGetTokens}
                                                 disabled={dispensing || success}
                                                 whileHover={
@@ -337,8 +337,7 @@ export const TokenDispenserSection: React.FC = () => {
                                         <div className="text-sm text-foreground/60 pt-4 border-t border-border">
                                             <p className="flex items-center">
                                                 <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                                                For testing purposes only. One
-                                                request per wallet per 24 hours.
+                                                For testing purposes only.
                                             </p>
                                         </div>
                                     </div>
@@ -367,14 +366,6 @@ export const TokenDispenserSection: React.FC = () => {
                             </div>
                         </div>
                     </motion.div>
-
-                    {/* Rate limit information */}
-                    <div className="mt-6 text-center text-sm text-foreground/60">
-                        <p>
-                            Need more tokens for your experiments? Try again in
-                            24 hours.
-                        </p>
-                    </div>
                 </div>
             </div>
         </section>

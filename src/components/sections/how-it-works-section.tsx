@@ -26,7 +26,7 @@ export const HowItWorksSection: React.FC = () => {
     const steps = [
         {
             id: 1,
-            title: 'Connect Laboratory',
+            title: 'Connect Wallet',
             description:
                 'Link your ArConnect wallet to identify your equipment',
             icon: Wallet,

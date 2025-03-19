@@ -61,7 +61,7 @@ export const TestTubeWalletButton: React.FC = () => {
             >
                 <span className="relative z-10 flex items-center">
                     <Beaker className="h-4 w-4 mr-2" />
-                    Connect Laboratory
+                    Connect your Wallet
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-[#7950F2] to-[#7950F2] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Button>
