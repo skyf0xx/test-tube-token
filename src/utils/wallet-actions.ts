@@ -1,4 +1,4 @@
-import { dryrun, result } from '@permaweb/aoconnect';
+import { createDataItemSigner, dryrun, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
 import { adjustDecimalString, withRetry } from './utils';
 import {
@@ -50,21 +50,52 @@ export interface MessageResult {
     }>;
 }
 
-export async function getTokens(): Promise<void> {
-    // This is a placeholder function that will be implemented later
-    // For now, it returns a resolved promise after a short delay to simulate network activity
-    return new Promise((resolve, reject) => {
-        try {
-            // Simulate network delay
-            setTimeout(() => {
-                console.log('Tokens dispensed - placeholder implementation');
-                resolve();
-            }, 2000);
-        } catch (error) {
-            console.error('Error dispensing tokens:', error);
-            reject(new Error('Failed to dispense tokens - placeholder error'));
-        }
-    });
+export async function getTokens(quantity: string): Promise<string> {
+    try {
+        const tags = [
+            { name: 'Action', value: 'Faucet' },
+            { name: 'Quantity', value: quantity },
+        ];
+
+        // Add quantity tag if provided
+
+        const signer = createDataItemSigner(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalThis as any).arweaveWallet
+        );
+
+        // Use withRetry for more reliable transaction sending
+        await withRetry(async () => {
+            // Send the message and get the result
+            const response = await sendAndGetResult(
+                TEST_TOKEN,
+                tags,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                signer as any,
+                false
+            );
+
+            const errorTag = response.Messages[0]?.Tags.find(
+                (tag) => tag.name === 'Error'
+            );
+            if (errorTag) {
+                throw new Error(`Faucet error: ${errorTag.value}`);
+            }
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        const address = await window.arweaveWallet?.getActiveAddress();
+        if (!address) return '0';
+        const balanceResult = await getBalance(address, TEST_TOKEN);
+
+        return balanceResult?.balance || '0';
+    } catch (error) {
+        console.error('Error dispensing tokens:', error);
+        throw new Error(
+            error instanceof Error ? error.message : 'Failed to dispense tokens'
+        );
+    }
 }
 
 export async function sendAndGetResult(

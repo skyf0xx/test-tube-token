@@ -23,7 +23,22 @@ export const TokenDispenserSection: React.FC = () => {
         setError(null);
 
         try {
-            await getTokens();
+            // Generate random number between 10 and 100
+            const randomAmount = Math.floor(Math.random() * 91) + 10;
+
+            // Add 12 zeros (multiply by 10^12) and convert to string
+            const quantity = (randomAmount * Math.pow(10, 12)).toString();
+
+            console.log(`Requesting ${randomAmount} TEST tokens`);
+
+            // Get tokens and retrieve the new balance
+            const newBalance = await getTokens(quantity);
+
+            // Update the wallet store with the new balance
+            useTestTubeWalletStore.setState({
+                balance: parseFloat(newBalance),
+            });
+
             setSuccess(true);
             // Reset success state after 5 seconds
             setTimeout(() => setSuccess(false), 5000);
