@@ -11,7 +11,7 @@ import {
     Code,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { MINT_TOKEN, MINT_PROCESS } from '@/utils/wallet-actions';
+import { TEST_TOKEN } from '@/utils/wallet-actions';
 
 export const TechnicalDetailsSection: React.FC = () => {
     const [activeTab, setActiveTab] = useState<
@@ -121,41 +121,14 @@ export const TechnicalDetailsSection: React.FC = () => {
                                             </div>
                                             <div className="flex items-center bg-muted p-3 rounded-lg">
                                                 <code className="text-xs font-mono flex-1 overflow-x-auto">
-                                                    {MINT_TOKEN}
+                                                    {TEST_TOKEN}
                                                 </code>
                                                 <motion.button
                                                     className="ml-2 p-1.5 rounded-md hover:bg-foreground/10"
                                                     onClick={() =>
                                                         handleCopy(
-                                                            MINT_TOKEN,
+                                                            TEST_TOKEN,
                                                             'Token contract address'
-                                                        )
-                                                    }
-                                                    whileHover={{ scale: 1.1 }}
-                                                    whileTap={{ scale: 0.9 }}
-                                                >
-                                                    <Copy
-                                                        size={14}
-                                                        className="text-foreground/70"
-                                                    />
-                                                </motion.button>
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <div className="text-sm font-medium mb-2">
-                                                Mint Process
-                                            </div>
-                                            <div className="flex items-center bg-muted p-3 rounded-lg">
-                                                <code className="text-xs font-mono flex-1 overflow-x-auto">
-                                                    {MINT_PROCESS}
-                                                </code>
-                                                <motion.button
-                                                    className="ml-2 p-1.5 rounded-md hover:bg-foreground/10"
-                                                    onClick={() =>
-                                                        handleCopy(
-                                                            MINT_PROCESS,
-                                                            'Mint process ID'
                                                         )
                                                     }
                                                     whileHover={{ scale: 1.1 }}
@@ -171,7 +144,7 @@ export const TechnicalDetailsSection: React.FC = () => {
 
                                         <div className="mt-4 pt-3 border-t border-border">
                                             <a
-                                                href={`https://ao.arweave.dev/#/process/${MINT_TOKEN}`}
+                                                href={`https://ao.arweave.dev/#/process/${TEST_TOKEN}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="flex items-center text-primary hover:underline text-sm"
@@ -289,15 +262,7 @@ export const TechnicalDetailsSection: React.FC = () => {
                                                             Decimals
                                                         </span>
                                                         <span className="text-sm font-mono">
-                                                            8
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-sm">
-                                                            Standard
-                                                        </span>
-                                                        <span className="text-sm font-mono">
-                                                            AO PST
+                                                            12
                                                         </span>
                                                     </div>
                                                 </div>

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useTestTubeWalletStore } from '@/hooks/use-testtube-wallet';
 import { toast } from 'react-toastify';
-import { MINT_TOKEN } from '@/utils/wallet-actions';
+import { TEST_TOKEN } from '@/utils/wallet-actions';
 import { cn } from '@/utils/utils';
 import { sendMessage } from '@/utils/messages';
 
@@ -199,7 +199,7 @@ const ConnectedDispenser: React.FC<{ address: string }> = ({ address }) => {
                 { name: 'Quantity', value: '10000000000' }, // 100 tokens with 8 decimal places
             ];
 
-            const txId = await sendMessage(MINT_TOKEN, tags, true);
+            const txId = await sendMessage(TEST_TOKEN, tags, true);
 
             // Store the transaction details and timestamp
             const txData = { id: txId, timestamp: Date.now() };
@@ -445,7 +445,7 @@ const ConnectedDispenser: React.FC<{ address: string }> = ({ address }) => {
                                                 </div>
                                                 <div className="mt-2 pt-2 border-t border-border">
                                                     <a
-                                                        href={`https://ao.arweave.dev/#/process/${MINT_TOKEN}`}
+                                                        href={`https://ao.arweave.dev/#/process/${TEST_TOKEN}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center justify-center text-xs text-primary hover:underline"

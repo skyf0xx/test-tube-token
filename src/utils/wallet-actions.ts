@@ -8,8 +8,7 @@ import {
     setCache,
 } from './cache';
 
-export const MINT_PROCESS = 'lNtrei6YLQiWS8cyFFHDrOBvRzICQPTvrjZBP8fz-ZI';
-export const MINT_TOKEN = 'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0';
+export const TEST_TOKEN = 'U09Pg31Wlasc8ox5uTDm9sjFQT8XKcCR2Ru5lmFMe2A';
 
 interface StakedBalance {
     address: never;
