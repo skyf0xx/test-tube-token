@@ -205,6 +205,9 @@ export interface TokenBalance {
     account?: string;
 }
 
+// Create a dedicated object for tracking in-flight requests
+const inFlightRequests = new Map<string, boolean>();
+
 export async function getBalance(
     address: string,
     token: string,
@@ -212,6 +215,7 @@ export async function getBalance(
 ): Promise<TokenBalance | null> {
     // Create a cache key for the balance result
     const balanceCacheKey = `balance_${address}_${token}`;
+    const inFlightKey = `in_flight_${balanceCacheKey}`;
 
     // Try to get from localStorage cache first
     const cachedBalance = localStorage.getItem(balanceCacheKey);
@@ -230,17 +234,14 @@ export async function getBalance(
     }
 
     // Track in-flight requests to prevent duplicates
-    const inFlightKey = `in_flight_${balanceCacheKey}`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (window[inFlightKey as any]) {
+    if (inFlightRequests.get(inFlightKey)) {
         console.log('Balance request already in flight, waiting...');
 
         // Wait for the in-flight request to complete
         try {
             await new Promise((resolve) => {
                 const checkCache = () => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    if (!window[inFlightKey as any]) {
+                    if (!inFlightRequests.get(inFlightKey)) {
                         resolve(true);
                         return;
                     }
@@ -265,8 +266,7 @@ export async function getBalance(
     }
 
     // Mark this request as in-flight
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    window[inFlightKey as any] = true;
+    inFlightRequests.set(inFlightKey, true);
 
     const tags = [
         { name: 'Action', value: 'Balance' },
@@ -309,8 +309,7 @@ export async function getBalance(
         return handleError(error, 'getting token balance', null);
     } finally {
         // Mark request as completed
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        window[inFlightKey as any] = false;
+        inFlightRequests.delete(inFlightKey);
     }
 }
 
