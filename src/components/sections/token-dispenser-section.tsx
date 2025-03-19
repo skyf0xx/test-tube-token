@@ -300,7 +300,7 @@ const ConnectedDispenser: React.FC<{ address: string }> = ({ address }) => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            <h3 className="text-xl font-bold font-headings mb-3 text-center">
+                            <h3 className="text-xl font-bold font-headings mb-3 text-center text-foreground">
                                 Request Test Tokens
                             </h3>
                             <p className="text-foreground/70 mb-6 text-center max-w-md">
@@ -309,12 +309,12 @@ const ConnectedDispenser: React.FC<{ address: string }> = ({ address }) => {
                             </p>
                             <motion.button
                                 onClick={handleRequestTokens}
-                                className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-white font-medium rounded-lg px-6 py-3 shadow-md"
+                                className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-foreground font-medium rounded-lg px-6 py-3 shadow-md"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <Beaker size={18} className="mr-2" />
-                                Request Test Specimen
+                                Request Test Tokens
                             </motion.button>
                         </motion.div>
                     )}

@@ -81,7 +81,7 @@ export const HeroSection: React.FC = () => {
                                     onClick={() =>
                                         scrollToSection('token-dispenser')
                                     }
-                                    className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-white font-medium rounded-lg px-6 py-3 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+                                    className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-foreground font-medium rounded-lg px-6 py-3 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
