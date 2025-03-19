@@ -60,9 +60,10 @@ export const HeroSection: React.FC = () => {
                             className="text-lg md:text-xl text-foreground/80 mb-8 max-w-lg"
                             variants={itemVariants}
                         >
-                            Get free test tokens instantly. Connect your wallet,
-                            request tokens, and start building your blockchain
-                            experiments with scientific precision.
+                            Get <strong>free test tokens</strong> instantly.
+                            Connect your wallet, request tokens, and start
+                            building your blockchain experiments with scientific
+                            precision.
                         </motion.p>
 
                         <motion.div variants={itemVariants}>
