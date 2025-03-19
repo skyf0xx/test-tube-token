@@ -33,7 +33,7 @@ export const useAnimationPreferences = () => {
             // If no saved preference, respect system setting
             setIsEnabled(!prefersReducedMotion);
         }
-    }, [prefersReducedMotion]);
+    }, []);
 
     // Function to toggle animation preference
     const toggleAnimations = () => {

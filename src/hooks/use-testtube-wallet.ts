@@ -2,26 +2,49 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from 'react-toastify';
+import { getBalance, TEST_TOKEN } from '@/utils/wallet-actions';
 
 // Add to the interface
 interface TestTubeWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
-    balance: number | undefined; // Add this line
+    balance: number | undefined;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
+    refreshBalance: () => Promise<void>; // Add a function to refresh balance
 }
 
 // Rest of the code remains the same
 export const useTestTubeWalletStore = create<TestTubeWalletState>()(
     devtools(
-        (set) => ({
+        (set, get) => ({
             address: null,
             connecting: false,
             connected: false,
             balance: undefined,
+
+            refreshBalance: async () => {
+                const { address, connected } = get();
+                if (!connected || !address) return;
+
+                try {
+                    const balanceResponse = await getBalance(
+                        address,
+                        TEST_TOKEN,
+                        12
+                    );
+                    if (balanceResponse) {
+                        set({ balance: parseFloat(balanceResponse.balance) });
+                    }
+                } catch (error) {
+                    console.error('Error fetching balance:', error);
+                    toast.error('Failed to fetch token balance', {
+                        autoClose: 5000,
+                    });
+                }
+            },
 
             checkConnection: async () => {
                 try {
@@ -40,6 +63,10 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                             connecting: false,
                             connected: true,
                         });
+
+                        // Fetch balance after confirming connection
+                        const { refreshBalance } = get();
+                        await refreshBalance();
                     }
                 } catch (error) {
                     console.error('Error checking connection:', error);
@@ -77,6 +104,10 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                         connected: true,
                     });
 
+                    // Fetch balance after connecting
+                    const { refreshBalance } = get();
+                    await refreshBalance();
+
                     toast.success(
                         '🧪 Wallet connected! Wallet successfully linked',
                         {
@@ -103,6 +134,7 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
+                        balance: undefined, // Reset balance on disconnect
                     });
 
                     toast.info('🧬 Wallet disconnected. Wallet link removed', {
@@ -122,9 +154,7 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
 
 // Hook to initialize wallet event listeners
 export const useTestTubeWalletInit = () => {
-    const checkConnection = useTestTubeWalletStore(
-        (state) => state.checkConnection
-    );
+    const { checkConnection } = useTestTubeWalletStore();
 
     useEffect(() => {
         checkConnection();
@@ -137,5 +167,5 @@ export const useTestTubeWalletInit = () => {
             window.removeEventListener('arweaveWalletLoaded', checkConnection);
             window.removeEventListener('walletSwitch', checkConnection);
         };
-    }, [checkConnection]);
+    }, []);
 };
