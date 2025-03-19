@@ -42,7 +42,7 @@ export const HowItWorksSection: React.FC = () => {
         {
             id: 3,
             title: 'Begin Experiments',
-            description: 'Start developing on Arweave/AO blockchain',
+            description: 'Start developing on AO',
             icon: Code,
             color: 'from-[#7950F2] to-[#9775FA]',
         },

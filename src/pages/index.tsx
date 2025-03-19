@@ -22,7 +22,7 @@ export default function Home() {
                 </title>
                 <meta
                     name="description"
-                    content="A laboratory-grade faucet for Arweave/AO blockchain development"
+                    content="A laboratory-grade faucet for AO blockchain development"
                 />
                 <meta
                     name="viewport"

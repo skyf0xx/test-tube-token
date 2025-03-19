@@ -32,8 +32,8 @@ export const TokenDispenserSection: React.FC = () => {
                         Token Dispenser
                     </h2>
                     <p className="text-foreground/70 max-w-xl mx-auto">
-                        Request your test tokens for the Arweave/AO blockchain.
-                        New specimens available every 24 hours.
+                        Request your test tokens for the AO blockchain. New
+                        specimens available every 24 hours.
                     </p>
                 </div>
 
