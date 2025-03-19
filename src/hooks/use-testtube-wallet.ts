@@ -3,21 +3,25 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from 'react-toastify';
 
+// Add to the interface
 interface TestTubeWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
+    balance: number | undefined; // Add this line
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
 }
 
+// Rest of the code remains the same
 export const useTestTubeWalletStore = create<TestTubeWalletState>()(
     devtools(
         (set) => ({
             address: null,
             connecting: false,
             connected: false,
+            balance: undefined,
 
             checkConnection: async () => {
                 try {
@@ -49,7 +53,7 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                     // Check if ArConnect is installed
                     if (!window.arweaveWallet) {
                         toast.info(
-                            '🧪 Laboratory equipment needed! Please install ArConnect to continue',
+                            '🧪 Wallet needed! Please install ArConnect to continue',
                             {
                                 autoClose: 5000,
                             }
@@ -74,7 +78,7 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                     });
 
                     toast.success(
-                        '🧪 Laboratory connected! Wallet successfully linked',
+                        '🧪 Wallet connected! Wallet successfully linked',
                         {
                             autoClose: 3000,
                         }
@@ -101,15 +105,12 @@ export const useTestTubeWalletStore = create<TestTubeWalletState>()(
                         connected: false,
                     });
 
-                    toast.info(
-                        '🧬 Laboratory disconnected. Wallet link removed',
-                        {
-                            autoClose: 3000,
-                        }
-                    );
+                    toast.info('🧬 Wallet disconnected. Wallet link removed', {
+                        autoClose: 3000,
+                    });
                 } catch (error) {
                     console.error('Error disconnecting wallet:', error);
-                    toast.error('Failed to disconnect laboratory equipment', {
+                    toast.error('Failed to disconnect wallet equipment', {
                         autoClose: 5000,
                     });
                 }
