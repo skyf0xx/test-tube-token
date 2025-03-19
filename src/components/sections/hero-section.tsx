@@ -7,215 +7,124 @@ import { scrollToSection } from '@/utils/helpers';
 export const HeroSection: React.FC = () => {
     const { connect, connected } = useTestTubeWalletStore();
 
-    // Animation variants
-    const containerVariants = {
+    // Simplified animation variants
+    const fadeIn = {
         hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+        visible: { opacity: 1, transition: { duration: 0.4 } },
     };
 
     return (
         <section
             id="hero"
-            className="min-h-[75vh] w-full flex items-center relative overflow-hidden border-b border-border"
+            className="min-h-[80vh] w-full flex items-center relative overflow-hidden border-b border-border"
         >
             {/* Background with subtle grid pattern */}
-            <div className="absolute inset-0 lab-grid-bg opacity-30"></div>
+            <div className="absolute inset-0 lab-grid-bg opacity-20"></div>
 
             {/* Main content container */}
-            <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    {/* Left column: Text content */}
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
+                    {/* Text content - takes 3/5 of space on desktop */}
                     <motion.div
-                        className="flex flex-col"
-                        variants={containerVariants}
+                        className="md:col-span-3 flex flex-col"
                         initial="hidden"
                         animate="visible"
+                        variants={fadeIn}
                     >
-                        <motion.div
-                            className="inline-flex items-center mb-4 bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-medium max-w-fit"
-                            variants={itemVariants}
-                        >
-                            <FlaskConical size={16} className="mr-2" />
-                            Laboratory-Grade Blockchain Faucet
-                        </motion.div>
+                        {/* Bold, direct headline */}
+                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-headings mb-6 text-foreground leading-tight">
+                            Free Test Tokens{' '}
+                            <span className="text-laboratory-blue">
+                                for Blockchain Experiments
+                            </span>
+                        </h1>
 
-                        <motion.h1
-                            className="text-4xl md:text-5xl lg:text-6xl font-bold font-headings mb-4 bg-clip-text text-transparent bg-gradient-to-r from-laboratory-blue to-test-tube-green"
-                            variants={itemVariants}
-                        >
-                            Tokens for Your Blockchain Experiments
-                        </motion.h1>
+                        {/* Clear, concise subheadline */}
+                        <p className="text-xl md:text-2xl text-foreground/80 mb-8 max-w-2xl font-medium">
+                            Get tokens instantly. Build with confidence.
+                        </p>
 
-                        <motion.p
-                            className="text-lg md:text-xl text-foreground/80 mb-8 max-w-lg"
-                            variants={itemVariants}
-                        >
-                            Get <strong>free test tokens</strong> instantly.
-                            Connect your wallet, request tokens, and start
-                            building your blockchain experiments with scientific
-                            precision.
-                        </motion.p>
+                        {/* Prominent CTA */}
+                        <div className="flex flex-col sm:flex-row gap-4 items-start">
+                            <motion.button
+                                onClick={
+                                    connected
+                                        ? () =>
+                                              scrollToSection('token-dispenser')
+                                        : connect
+                                }
+                                className="bg-laboratory-blue text-foreground text-lg font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-laboratory-blue/90 transition-all"
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                {connected
+                                    ? 'Get Tokens Now'
+                                    : 'Connect Wallet'}
+                            </motion.button>
 
-                        <motion.div variants={itemVariants}>
-                            {!connected ? (
-                                <motion.button
-                                    onClick={connect}
-                                    className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-white font-medium rounded-lg px-6 py-3 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.98 }}
-                                >
-                                    <FlaskConical size={18} className="mr-2" />
-                                    Connect Laboratory
-                                </motion.button>
-                            ) : (
-                                <motion.button
-                                    onClick={() =>
-                                        scrollToSection('token-dispenser')
-                                    }
-                                    className="inline-flex items-center bg-gradient-to-r from-laboratory-blue to-test-tube-green text-foreground font-medium rounded-lg px-6 py-3 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.98 }}
-                                >
-                                    Request Test Tokens
-                                </motion.button>
-                            )}
-                        </motion.div>
+                            {/* Secondary action for those who want to learn more */}
+                            <button
+                                onClick={() => scrollToSection('how-it-works')}
+                                className="flex items-center text-foreground/70 hover:text-laboratory-blue font-medium px-4 py-2 transition-colors"
+                            >
+                                How it works{' '}
+                                <ChevronDown size={18} className="ml-1" />
+                            </button>
+                        </div>
+
+                        {/* Trust indicator */}
+                        <div className="mt-8 flex items-center text-foreground/60 text-sm">
+                            <FlaskConical
+                                size={16}
+                                className="mr-2 text-test-tube-green"
+                            />
+                            Laboratory-grade tokens for developers
+                        </div>
                     </motion.div>
 
-                    {/* Right column: Laboratory visualization */}
+                    {/* Visual element - takes 2/5 of space on desktop */}
                     <motion.div
-                        className="hidden md:flex justify-center items-center"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="hidden md:flex md:col-span-2 justify-center items-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                     >
-                        <LaboratoryVisualization />
+                        {/* Simplified visualization */}
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-56 h-56 rounded-full bg-laboratory-blue/10 flex items-center justify-center">
+                                    <FlaskConical
+                                        size={120}
+                                        className="text-laboratory-blue"
+                                        strokeWidth={1.5}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Animated liquid element */}
+                            <motion.div
+                                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gradient-to-t from-test-tube-green to-laboratory-blue rounded-full opacity-70"
+                                animate={{
+                                    y: [0, -8, 0],
+                                    opacity: [0.7, 0.9, 0.7],
+                                }}
+                                transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: 'easeInOut',
+                                }}
+                            />
+
+                            {/* Token label */}
+                            <div className="mt-64 text-center">
+                                <span className="text-sm font-mono font-semibold bg-white/90 px-3 py-1 rounded-md border border-border shadow-sm">
+                                    TEST TUBE TOKEN
+                                </span>
+                            </div>
+                        </div>
                     </motion.div>
                 </div>
-
-                {/* Scroll indicator */}
-                <motion.div
-                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center cursor-pointer"
-                    onClick={() => scrollToSection('token-dispenser')}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    whileHover={{ y: 5 }}
-                >
-                    <span className="text-sm text-foreground/60 mb-2">
-                        Scroll to explore
-                    </span>
-                    <ChevronDown
-                        size={20}
-                        className="text-primary animate-bounce"
-                    />
-                </motion.div>
             </div>
         </section>
-    );
-};
-
-// Laboratory visualization component
-const LaboratoryVisualization: React.FC = () => {
-    return (
-        <div className="relative h-[300px] w-[300px] sm:h-[400px] sm:w-[400px]">
-            {/* Large flask in background */}
-            <motion.div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <FlaskConical
-                    size={120}
-                    className="text-primary/30"
-                    strokeWidth={1}
-                />
-            </motion.div>
-
-            {/* Flask with liquid animation */}
-            <motion.div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-            >
-                <div className="relative h-[200px] w-[140px]">
-                    {/* Flask outline */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <FlaskConical
-                            size={180}
-                            className="text-laboratory-blue"
-                            strokeWidth={2}
-                        />
-                    </div>
-
-                    {/* Animated liquid */}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[80px] h-[80px] rounded-b-full overflow-hidden">
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-t from-test-tube-green to-laboratory-blue opacity-80"
-                            initial={{ y: 80 }}
-                            animate={{ y: 0 }}
-                            transition={{
-                                duration: 2,
-                                ease: 'easeOut',
-                                repeat: Infinity,
-                                repeatType: 'reverse',
-                                repeatDelay: 1,
-                            }}
-                        >
-                            {/* Bubbles */}
-                            <motion.div
-                                className="absolute w-4 h-4 rounded-full bg-white opacity-50 left-[20%] top-[30%]"
-                                animate={{ y: [-20, 0], opacity: [0.7, 0] }}
-                                transition={{
-                                    duration: 2,
-                                    repeat: Infinity,
-                                    repeatDelay: 0.5,
-                                }}
-                            />
-                            <motion.div
-                                className="absolute w-3 h-3 rounded-full bg-white opacity-50 left-[60%] top-[50%]"
-                                animate={{ y: [-15, 0], opacity: [0.6, 0] }}
-                                transition={{
-                                    duration: 1.5,
-                                    repeat: Infinity,
-                                    repeatDelay: 1,
-                                }}
-                            />
-                        </motion.div>
-                    </div>
-                </div>
-
-                {/* Label */}
-                <div className="mt-4 bg-white/90 px-3 py-1 rounded-md border border-border shadow-sm">
-                    <span className="text-xs font-mono text-primary font-medium">
-                        TEST_TUBE_TOKEN
-                    </span>
-                </div>
-            </motion.div>
-
-            {/* Decorative elements */}
-            <motion.div
-                className="absolute top-[30%] right-[10%] h-6 w-6 rounded-full bg-test-tube-green/20 border border-test-tube-green/30"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 4, repeat: Infinity }}
-            />
-            <motion.div
-                className="absolute bottom-[20%] left-[15%] h-8 w-8 rounded-full bg-scientific-purple/20 border border-scientific-purple/30"
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-            />
-        </div>
     );
 };
