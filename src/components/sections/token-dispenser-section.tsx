@@ -1,20 +1,98 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import {
     AlertCircle,
     CheckCircle,
     Loader2,
     FlaskConical,
     ArrowRight,
+    Droplet,
 } from 'lucide-react';
 import { useTestTubeWalletStore } from '@/hooks/use-testtube-wallet';
 import { getTokens } from '@/utils/wallet-actions';
+
+// Number counter animation component
+const AnimatedCounter = ({
+    value,
+    duration = 1.5,
+}: {
+    value: number;
+    duration?: number;
+}) => {
+    const nodeRef = useRef<HTMLSpanElement>(null);
+    const [counter, setCounter] = useState(value);
+
+    useEffect(() => {
+        let start = value;
+        // Get current value
+        if (nodeRef.current && nodeRef.current.textContent) {
+            start = parseFloat(
+                nodeRef.current.textContent.replace(/[^0-9.-]+/g, '')
+            );
+        }
+        if (isNaN(start)) start = 0;
+
+        // Calculate step size
+        const end = value;
+        const range = end - start;
+        const minStep = 0.001;
+        const stepCount = Math.max(Math.floor(duration * 60), 1);
+        const step = Math.max(minStep, Math.abs(range) / stepCount);
+
+        let current = start;
+        const timer = setInterval(() => {
+            if (range > 0) {
+                current = Math.min(current + step, end);
+            } else {
+                current = Math.max(current - step, end);
+            }
+            setCounter(current);
+            if (Math.abs(current - end) < minStep) {
+                setCounter(end);
+                clearInterval(timer);
+            }
+        }, 1000 / 60);
+
+        return () => clearInterval(timer);
+    }, [value, duration]);
+
+    return <span ref={nodeRef}>{counter.toFixed(4)}</span>;
+};
 
 export const TokenDispenserSection: React.FC = () => {
     const { connected, address, balance } = useTestTubeWalletStore();
     const [dispensing, setDispensing] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [previousBalance, setPreviousBalance] = useState(balance || 0);
+    const [showBalanceHighlight, setShowBalanceHighlight] = useState(false);
+    const [tokenAmount, setTokenAmount] = useState(0);
+    const bubbleControls = useAnimation();
+
+    // Track previous balance to detect changes
+    useEffect(() => {
+        if (balance !== undefined && balance !== previousBalance) {
+            // Only trigger animation if it's an increase
+            if (balance > previousBalance) {
+                const gained = balance - previousBalance;
+                setTokenAmount(gained);
+                setShowBalanceHighlight(true);
+
+                // Start the bubble animations
+                bubbleControls.start({
+                    opacity: [0, 1, 0],
+                    y: [0, -60],
+                    transition: { duration: 2, ease: 'easeOut' },
+                });
+
+                // Reset highlight after animation
+                setTimeout(() => {
+                    setShowBalanceHighlight(false);
+                }, 1500);
+            }
+            setPreviousBalance(balance);
+        }
+    }, [balance, previousBalance]);
 
     const handleGetTokens = async () => {
         if (!connected) return;
@@ -49,6 +127,25 @@ export const TokenDispenserSection: React.FC = () => {
         } finally {
             setDispensing(false);
         }
+    };
+
+    // Laboratory liquid animation variants
+    const liquidVariants = {
+        initial: {
+            d: 'M31 150 Q31 179 50 179 Q69 179 69 150 L69 150 L31 150 Z',
+        },
+        dispensing: {
+            d: [
+                'M31 150 Q31 179 50 179 Q69 179 69 150 L69 150 L31 150 Z',
+                'M31 150 Q31 179 50 179 Q69 179 69 150 L69 100 L31 100 Z',
+                'M31 150 Q31 179 50 179 Q69 179 69 150 L69 70 L31 70 Z',
+            ],
+            transition: {
+                duration: 2,
+                ease: 'easeInOut',
+                times: [0, 0.7, 1],
+            },
+        },
     };
 
     return (
@@ -129,25 +226,13 @@ export const TokenDispenserSection: React.FC = () => {
                                             <motion.path
                                                 d="M31 150 Q31 179 50 179 Q69 179 69 150 L69 100 L31 100 Z"
                                                 fill="url(#testTubeGradient)"
-                                                initial={{
-                                                    d: 'M31 150 Q31 179 50 179 Q69 179 69 150 L69 150 L31 150 Z',
-                                                }}
+                                                variants={liquidVariants}
+                                                initial="initial"
                                                 animate={
                                                     dispensing
-                                                        ? {
-                                                              d: [
-                                                                  'M31 150 Q31 179 50 179 Q69 179 69 150 L69 150 L31 150 Z',
-                                                                  'M31 150 Q31 179 50 179 Q69 179 69 150 L69 100 L31 100 Z',
-                                                                  'M31 150 Q31 179 50 179 Q69 179 69 150 L69 70 L31 70 Z',
-                                                              ],
-                                                          }
-                                                        : {}
+                                                        ? 'dispensing'
+                                                        : 'initial'
                                                 }
-                                                transition={{
-                                                    duration: 2,
-                                                    ease: 'easeInOut',
-                                                    times: [0, 0.7, 1],
-                                                }}
                                             />
 
                                             {/* Gradient definition for liquid */}
@@ -171,6 +256,69 @@ export const TokenDispenserSection: React.FC = () => {
                                                 </linearGradient>
                                             </defs>
                                         </svg>
+
+                                        {/* Token droplets that flow from test tube to balance when dispensing */}
+                                        {dispensing && (
+                                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+                                                <motion.div
+                                                    className="absolute"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        y: 0,
+                                                    }}
+                                                    animate={{
+                                                        opacity: [0, 1, 0],
+                                                        y: [0, 120],
+                                                        x: [0, 40],
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.5,
+                                                        delay: 0.5,
+                                                        times: [0, 0.3, 1],
+                                                    }}
+                                                >
+                                                    <Droplet className="text-laboratory-blue w-5 h-5" />
+                                                </motion.div>
+                                                <motion.div
+                                                    className="absolute"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        y: 0,
+                                                    }}
+                                                    animate={{
+                                                        opacity: [0, 1, 0],
+                                                        y: [0, 120],
+                                                        x: [0, 60],
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.8,
+                                                        delay: 0.8,
+                                                        times: [0, 0.3, 1],
+                                                    }}
+                                                >
+                                                    <Droplet className="text-test-tube-green w-4 h-4" />
+                                                </motion.div>
+                                                <motion.div
+                                                    className="absolute"
+                                                    initial={{
+                                                        opacity: 0,
+                                                        y: 0,
+                                                    }}
+                                                    animate={{
+                                                        opacity: [0, 1, 0],
+                                                        y: [0, 120],
+                                                        x: [0, 20],
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.6,
+                                                        delay: 1.1,
+                                                        times: [0, 0.3, 1],
+                                                    }}
+                                                >
+                                                    <Droplet className="text-scientific-purple w-5 h-5" />
+                                                </motion.div>
+                                            </div>
+                                        )}
 
                                         {/* Bubbles animation during dispensing */}
                                         {dispensing && (
@@ -255,19 +403,145 @@ export const TokenDispenserSection: React.FC = () => {
                                                     </code>
                                                 </div>
 
-                                                {/* Current balance if available */}
+                                                {/* Current balance with animation when it changes */}
                                                 {balance !== undefined && (
-                                                    <div className="mt-3 flex items-center text-sm">
-                                                        <FlaskConical className="w-4 h-4 mr-2 text-laboratory-blue" />
-                                                        <span>
-                                                            Current Balance:{' '}
-                                                            <strong className="font-mono">
-                                                                {balance.toFixed(
-                                                                    4
-                                                                )}{' '}
-                                                                TEST
-                                                            </strong>
-                                                        </span>
+                                                    <div className="mt-3 relative">
+                                                        {/* Visual bubbles animation for balance increase */}
+                                                        <div className="absolute bottom-0 left-4 pointer-events-none">
+                                                            <AnimatePresence>
+                                                                {showBalanceHighlight && (
+                                                                    <>
+                                                                        <motion.div
+                                                                            className="absolute left-2"
+                                                                            animate={
+                                                                                bubbleControls
+                                                                            }
+                                                                            initial={{
+                                                                                opacity: 0,
+                                                                                y: 0,
+                                                                            }}
+                                                                            exit={{
+                                                                                opacity: 0,
+                                                                            }}
+                                                                        >
+                                                                            <Droplet className="text-laboratory-blue w-3 h-3" />
+                                                                        </motion.div>
+                                                                        <motion.div
+                                                                            className="absolute left-6"
+                                                                            animate={
+                                                                                bubbleControls
+                                                                            }
+                                                                            initial={{
+                                                                                opacity: 0,
+                                                                                y: 0,
+                                                                            }}
+                                                                            transition={{
+                                                                                delay: 0.2,
+                                                                            }}
+                                                                            exit={{
+                                                                                opacity: 0,
+                                                                            }}
+                                                                        >
+                                                                            <Droplet className="text-test-tube-green w-3 h-3" />
+                                                                        </motion.div>
+                                                                        <motion.div
+                                                                            className="absolute left-4"
+                                                                            animate={
+                                                                                bubbleControls
+                                                                            }
+                                                                            initial={{
+                                                                                opacity: 0,
+                                                                                y: 0,
+                                                                            }}
+                                                                            transition={{
+                                                                                delay: 0.4,
+                                                                            }}
+                                                                            exit={{
+                                                                                opacity: 0,
+                                                                            }}
+                                                                        >
+                                                                            <Droplet className="text-scientific-purple w-3 h-3" />
+                                                                        </motion.div>
+                                                                    </>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+
+                                                        {/* Balance display with animation */}
+                                                        <div className="flex items-center text-sm">
+                                                            <FlaskConical className="w-4 h-4 mr-2 text-laboratory-blue" />
+                                                            <span>
+                                                                Current Balance:{' '}
+                                                                <motion.strong
+                                                                    className="font-mono relative"
+                                                                    animate={
+                                                                        showBalanceHighlight
+                                                                            ? {
+                                                                                  boxShadow:
+                                                                                      [
+                                                                                          '0 0 0px rgba(55, 178, 77, 0)',
+                                                                                          '0 0 8px rgba(55, 178, 77, 0.8)',
+                                                                                          '0 0 0px rgba(55, 178, 77, 0)',
+                                                                                      ],
+                                                                                  color: [
+                                                                                      'inherit',
+                                                                                      'var(--test-tube-green)',
+                                                                                      'inherit',
+                                                                                  ],
+                                                                              }
+                                                                            : {}
+                                                                    }
+                                                                    transition={{
+                                                                        duration: 1.5,
+                                                                    }}
+                                                                >
+                                                                    <AnimatedCounter
+                                                                        value={
+                                                                            balance
+                                                                        }
+                                                                        duration={
+                                                                            1.5
+                                                                        }
+                                                                    />{' '}
+                                                                    TEST
+                                                                </motion.strong>
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Token amount notification */}
+                                                        <AnimatePresence>
+                                                            {showBalanceHighlight && (
+                                                                <motion.div
+                                                                    className="absolute left-24 -top-6"
+                                                                    initial={{
+                                                                        opacity: 0,
+                                                                        y: 10,
+                                                                        scale: 0.8,
+                                                                    }}
+                                                                    animate={{
+                                                                        opacity: 1,
+                                                                        y: 0,
+                                                                        scale: 1,
+                                                                    }}
+                                                                    exit={{
+                                                                        opacity: 0,
+                                                                        y: -10,
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: 0.5,
+                                                                    }}
+                                                                >
+                                                                    <div className="bg-test-tube-green/20 text-test-tube-green px-2 py-1 rounded-full text-xs font-mono font-bold flex items-center">
+                                                                        <span>
+                                                                            +
+                                                                            {tokenAmount.toFixed(
+                                                                                2
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
                                                     </div>
                                                 )}
                                             </div>
