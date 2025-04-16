@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FlaskConical, ChevronDown } from 'lucide-react';
+import { FlaskConical, ChevronDown, Twitter, ExternalLink } from 'lucide-react';
 import { useTestTubeWalletStore } from '@/hooks/use-testtube-wallet';
 import { scrollToSection } from '@/utils/helpers';
 
@@ -12,6 +12,22 @@ export const HeroSection: React.FC = () => {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { duration: 0.4 } },
     };
+
+    // Partners data with Twitter handles and URLs (reused from footer)
+    const partners = [
+        {
+            handle: '@AlwaysBigger',
+            url: 'https://x.com/AlwaysBigger',
+        },
+        {
+            handle: '@Mithril_Labs',
+            url: 'https://x.com/Mithril_Labs',
+        },
+        {
+            handle: '@RandAOToken',
+            url: 'https://x.com/RandAOToken',
+        },
+    ];
 
     return (
         <section
@@ -80,6 +96,41 @@ export const HeroSection: React.FC = () => {
                             />
                             Laboratory-grade tokens for developers
                         </div>
+
+                        {/* Powered by section - subtle placement below the main CTA */}
+                        <motion.div
+                            className="mt-10 border-t border-border/30 pt-4"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.6 }}
+                        >
+                            <p className="text-xs text-foreground/50 mb-2 font-headings">
+                                Powered by
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                {partners.map((partner, index) => (
+                                    <a
+                                        key={index}
+                                        href={partner.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 px-2 py-1 bg-card/50 border border-border/50 rounded-md hover:border-laboratory-blue/50 transition-colors duration-200 group"
+                                    >
+                                        <Twitter
+                                            size={12}
+                                            className="text-laboratory-blue"
+                                        />
+                                        <span className="text-xs font-mono group-hover:text-laboratory-blue transition-colors duration-200">
+                                            {partner.handle}
+                                        </span>
+                                        <ExternalLink
+                                            size={10}
+                                            className="text-foreground/40 group-hover:text-laboratory-blue transition-colors duration-200"
+                                        />
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
                     </motion.div>
 
                     {/* Visual element - takes 2/5 of space on desktop */}

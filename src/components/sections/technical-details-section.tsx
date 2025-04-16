@@ -162,7 +162,7 @@ export const TechnicalDetailsSection: React.FC = () => {
                                                 Resources
                                             </h4>
                                             <a
-                                                href={`https://ao.arweave.dev/#/process/${TEST_TOKEN}`}
+                                                href={`https://www.ao.link/#/token/${TEST_TOKEN}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="flex items-center text-primary hover:underline text-sm p-2 rounded-md hover:bg-muted/50 transition-colors"
@@ -337,25 +337,26 @@ export const TechnicalDetailsSection: React.FC = () => {
                                                             <span className="font-mono block mb-2">
                                                                 Random
                                                             </span>
-                                                            {/* 
                                                             <div className="flex items-center text-xs text-foreground/70">
-                                                            <span>
-                                                                Powered by{' '}
-                                                            </span>
-                                                            
-                                                                href="https://github.com/RandAOLabs/Random-Module"
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="ml-1 text-primary hover:underline flex items-center"
-                                                            >
-                                                                RandAOToken
-                                                                <ExternalLink
-                                                                size={10}
-                                                                className="ml-1"
-                                                                />
-                                                            </a>
+                                                                <span>
+                                                                    Powered by{' '}
+                                                                </span>
+
+                                                                <a
+                                                                    href="https://github.com/RandAOLabs/Random-Module"
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="ml-1 text-primary hover:underline flex items-center"
+                                                                >
+                                                                    RandAOToken
+                                                                    <ExternalLink
+                                                                        size={
+                                                                            10
+                                                                        }
+                                                                        className="ml-1"
+                                                                    />
+                                                                </a>
                                                             </div>
-                                                            */}
                                                         </div>
                                                     </div>
                                                 </div>
